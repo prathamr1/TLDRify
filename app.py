@@ -7,7 +7,7 @@ import re
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
-app = FastAPI(title="Text Summarizer App",
+app = FastAPI(title="TLDRify",
               description="Text Summarization using T5",)
 
 # Model and Tokenizer Loading
@@ -32,6 +32,7 @@ class DialogueInput(BaseModel):  # Client Request received as JSON
         text = text.strip().lower()
         return text
 
+
     def summarize_dialogue(dialogue : str) -> str:
         dialogue = clean_data(dialogue) # Clean Dialogue
         # Tokenise
@@ -48,7 +49,7 @@ class DialogueInput(BaseModel):  # Client Request received as JSON
         )
 
         # Token ids ==> Text using DECODING
-        summary = tokenizer.decode(target[0], skip_special_tokens=True, clean_up_tokenization_spaces=True)
+        summary = tokenizer.decode(target[0], skip_special_tokens=True)
 
         return summary
     
@@ -60,7 +61,8 @@ class DialogueInput(BaseModel):  # Client Request received as JSON
 # ASYNChronos -> parallel execution of tasks with minor delay
 @app.post("/summarize/")
 async def summarize(dialogue_input : DialogueInput):
-    summary = summarize_dialogue()
+    summary = summarize_dialogue(dialogue_input.dialogue)
+    return {"summary" : summary}
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request:Request):
