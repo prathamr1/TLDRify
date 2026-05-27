@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TLDRify</title>
-    <link rel="stylesheet" href="style.css">
+    <link
+    rel="stylesheet"
+    href="{{ url_for('static', path='style.css') }}">
 </head>
 <body>
     <div class="container">
         <h1>TLDRify</h1>
-        <h3>Text Summarizer using Hugging Face Transformer T5-small</h3>
+        <h3>Text Summarizer using 🤗 Transformer T5-small</h3>
         <p>Write or Paste your dialogue/content for quick summarization:</p>
         
         <form id="summarization-form">
