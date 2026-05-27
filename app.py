@@ -34,25 +34,56 @@ def clean_data(text):
     text = text.strip().lower()
     return text
 
+def restore_capitalization(text: str) -> str:
+    # Capitalize sentence beginnings
+    text = ". ".join(
+        sentence.strip().capitalize()
+        for sentence in text.split(".")
+        if sentence.strip()
+    )
+    return text
+
+def fix_punctuation(text: str) -> str:
+
+    text = text.strip()
+
+    # Add full stop if missing
+    if text and text[-1] not in ".!?":
+        text += "."
+
+    # Remove extra spaces before punctuation
+    text = re.sub(r"\s+([.,!?])", r"\1", text)
+
+    return text
 
 def summarize_dialogue(dialogue : str) -> str:
     dialogue = clean_data(dialogue) # Clean Dialogue
+    dialogue = "summarize: " + dialogue
     # Tokenise
     input = tokenizer(dialogue, padding="max_length", truncation=True, max_length=512, return_tensors="pt").to(device)
 
     model.to(device)
+
     # Summary Generation in Tokens
     target = model.generate(
         input_ids = input["input_ids"],
         attention_mask = input["attention_mask"],
-        max_length = 128,
+        min_length = 20,
+        max_length = 150,
         num_beams = 4, # beams --> transformer will generate 4 summaries and return the best one
-        early_stopping = True
+        early_stopping = True,
+        repetition_penalty=2.0,
+        no_repeat_ngram_size=3,
+        do_sample=True,
+        top_k=50,
+        top_p=0.95,
+        temperature=0.7
     )
 
     # Token ids ==> Text using DECODING
     summary = tokenizer.decode(target[0], skip_special_tokens=True)
-
+    summary = restore_capitalization(summary)
+    summary = fix_punctuation(summary)
     return summary
     
 
