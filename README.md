@@ -107,6 +107,7 @@ Where:
 - Optimized for FastAPI applications
 
 ---
+![Demo Image](/static/sample.png)
 
 ## System Workflow
 
